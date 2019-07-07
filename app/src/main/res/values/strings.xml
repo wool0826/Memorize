@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Memorize</string>
+    <string name="title_study">학습</string>
+    <string name="title_add">단어장</string>
+    <string name="add_wordbook">단어장(CSV) 추가</string>
+    <string name="add_word">단어 추가</string>
+    <string name="title_setting">설정</string>
+
+    <string name="switch_lockscreen">잠금화면 설정</string>
+    <string name="switch_hourMethod">24시간 형식 사용</string>
+    <string name="switch_haptic">진동 기능 사용</string>
+    <string name="enable_cardView">카드 형식</string>
+    <string name="enable_choice">객관식 형식</string>
+    <string name="backup_wordbook">단어장 CSV 백업</string>
+    <string name="donate">후원하기($1)</string>
+
+    <string name="cancel">취소</string>
+    <string name="admit">등록</string>
+    <string name="hint_word">단어</string>
+    <string name="hint_meaning">의미</string>
+    <string name="loading">로딩 중</string>
+
+    <string name="init_time">00:00</string>
+    <string name="init_date">August 26</string>
+    <string name="hint_lockscreen">슬라이드하거나 아이콘을 클릭해서 잠금 해제</string>
+
+    <string name="delete_word">선택한 단어 삭제</string>
+
+    <color name="bg">#FAFAFA</color>
+</resources>
