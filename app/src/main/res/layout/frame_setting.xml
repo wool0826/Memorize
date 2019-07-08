@@ -20,6 +20,7 @@
                 android:layout_margin="5dp"
                 android:text="@string/switch_lockscreen"
                 android:textColor="@color/colorPrimary"
+                android:textColorLink="@color/red"
                 android:textSize="16sp" />
 
             <Switch
@@ -29,36 +30,8 @@
                 android:layout_margin="5dp"
                 android:text="@string/switch_hourMethod"
                 android:textColor="@color/colorPrimary"
+                android:textColorLink="@color/red"
                 android:textSize="16sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/enableCardView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginRight="1dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/corner_left_button_selector"
-                    android:text="@string/enable_cardView"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/enableChoice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="1dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/corner_right_button_selector"
-                    android:text="@string/enable_choice"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="16sp" />
-            </LinearLayout>
 
             <Switch
                 android:id="@+id/switch_haptic"
@@ -70,30 +43,22 @@
                 android:layout_marginBottom="5dp"
                 android:text="@string/switch_haptic"
                 android:textColor="@color/colorPrimary"
+                android:textColorLink="@color/red"
                 android:textSize="16sp" />
 
             <Button
                 android:id="@+id/backupWordBook"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
                 android:background="@drawable/normal_button"
                 android:text="@string/backup_wordbook"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimaryText"
                 android:textSize="16sp" />
 
-            <Button
-                android:id="@+id/donate"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:background="@drawable/normal_button"
-                android:text="@string/donate"
-                android:textColor="@color/colorPrimary"
-                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

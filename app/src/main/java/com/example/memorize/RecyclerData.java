@@ -3,6 +3,7 @@ package com.example.memorize;
 import io.realm.RealmObject;
 
 public class RecyclerData extends RealmObject {
+    private boolean isChecked;
     private String word;
     private String meaning;
     private Integer successCount;
@@ -13,12 +14,14 @@ public class RecyclerData extends RealmObject {
         this.meaning = null;
         this.successCount = null;
         this.failureCount = null;
+        this.isChecked = false;
     }
-    public RecyclerData(String word, String meaning, Integer successCount, Integer failureCount){
+    public RecyclerData(String word, String meaning, Integer successCount, Integer failureCount, boolean isChecked){
         this.word = word;
         this.meaning = meaning;
         this.successCount = successCount;
         this.failureCount = failureCount;
+        this.isChecked = isChecked;
     }
 
     void setWord(String word){
@@ -47,5 +50,12 @@ public class RecyclerData extends RealmObject {
     }
     Integer getFailureCount(){
         return this.failureCount;
+    }
+
+    void setChecked(boolean checked){
+        this.isChecked = checked;
+    }
+    boolean getChecked(){
+        return this.isChecked;
     }
 }

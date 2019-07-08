@@ -22,7 +22,7 @@ public class FragmentSetting extends Fragment {
     private Context context;
 
     private Switch toggleLockScreen, hour24Method, toggleVibrate;
-    private Button lockScreenCardView, lockScreenChoiceView, backupWordBook;
+    private Button backupWordBook;
 
     @Nullable
     @Override
@@ -43,8 +43,6 @@ public class FragmentSetting extends Fragment {
         hour24Method = view.findViewById(R.id.switch_hourMethod);
         toggleVibrate = view.findViewById(R.id.switch_haptic);
 
-        lockScreenCardView = view.findViewById(R.id.enableCardView);
-        lockScreenChoiceView = view.findViewById(R.id.enableChoice);
         backupWordBook = view.findViewById(R.id.backupWordBook);
     }
     private void setListener(){
@@ -84,30 +82,6 @@ public class FragmentSetting extends Fragment {
             }
         });
 
-        lockScreenCardView.setOnClickListener(new Button.OnClickListener(){
-            public void onClick(View v){
-                lockScreenCardView.setSelected(true);
-                lockScreenChoiceView.setSelected(false);
-
-                SharedPreferences.Editor editor = context.getSharedPreferences("settings",Context.MODE_PRIVATE).edit();
-
-                editor.putString("lockScreenMethod", "card");
-                editor.apply();
-            }
-        });
-
-        lockScreenChoiceView.setOnClickListener(new Button.OnClickListener(){
-            public void onClick(View v){
-                lockScreenCardView.setSelected(false);
-                lockScreenChoiceView.setSelected(true);
-
-                SharedPreferences.Editor editor = context.getSharedPreferences("settings",Context.MODE_PRIVATE).edit();
-
-                editor.putString("lockScreenMethod", "choice");
-                editor.apply();
-            }
-        });
-
         backupWordBook.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
 
@@ -116,14 +90,9 @@ public class FragmentSetting extends Fragment {
     }
     private void setEnabledComponentRelatedToLockScreen(boolean status){
         hour24Method.setEnabled(status);
-        lockScreenCardView.setEnabled(status);
-        lockScreenChoiceView.setEnabled(status);
     }
     private void getPreference(){
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
-
-        if(sharedPreferences.getString("lockScreenMethod", "card").equals("card")) lockScreenCardView.callOnClick();
-        else lockScreenChoiceView.callOnClick();
 
         if(!sharedPreferences.getBoolean("lockScreen", false)){
             toggleLockScreen.setChecked(false);

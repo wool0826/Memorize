@@ -24,6 +24,9 @@
     <string name="init_date">August 26</string>
     <string name="hint_lockscreen">슬라이드하거나 아이콘을 클릭해서 잠금 해제</string>
 
+    <string name="iknow">알아요</string>
+    <string name="dontknow">몰라요</string>
+
     <string name="delete_word">선택한 단어 삭제</string>
 
     <color name="bg">#FAFAFA</color>

@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +44,11 @@ public class MainActivity extends AppCompatActivity {
 
         addFragmentToFrame(transaction);
         switchFragment(transaction);
+
+        Intent intent = new Intent(
+                getApplicationContext(),//현재제어권자
+                LockService.class); // 이동할 컴포넌트
+        startService(intent);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){

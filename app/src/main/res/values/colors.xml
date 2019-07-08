@@ -4,12 +4,12 @@
     <color name="colorPrimaryDark">#999999</color>
     <color name="colorAccent">#D81B60</color>
 
-    <color name="colorFail">#C30013</color>
-    <color name="colorSuccess">#168640</color>
-    <color name="colorNormalStatus">#FF8800</color>
+    <color name="colorPrimaryText">#FAFAFA</color>
 
-    <color name="colorButtonSelected">#d8facd</color>
-    <color name="colorButtonPressed">#EEEEEE</color>
-    <color name="colorButtonDisabled">#DDDDDD</color>
+    <color name="colorFail">#ff3b31</color>
+    <color name="colorSuccess">#4CD964</color>
+    <color name="colorNormalStatus">#FF9500</color>
+
+    <color name="red">#FF5A5F</color>
 
 </resources>

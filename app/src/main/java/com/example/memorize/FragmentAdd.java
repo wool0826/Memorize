@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,7 +40,7 @@ public class FragmentAdd extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
     private Realm realm;
-    private Button addWordBook, addWord;
+    private ImageButton addButton;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstaceState){
@@ -77,10 +79,12 @@ public class FragmentAdd extends Fragment {
     }
 
     private void setClickListener(){
-        addWord = view.findViewById(R.id.addWord);
-        addWordBook = view.findViewById(R.id.addWordBook);
+        addButton = view.findViewById(R.id.addButton);
 
-        addWord.setOnClickListener(new Button.OnClickListener(){
+        /*addWord = view.findViewById(R.id.addWord);
+        addWordBook = view.findViewById(R.id.addWordBook);*/
+
+        /*addWord.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v){
                 final CustomDialog dialog = new CustomDialog(context);
@@ -125,9 +129,9 @@ public class FragmentAdd extends Fragment {
 
                 dialog.show();
             }
-        });
+        });*/
 
-        addWordBook.setOnClickListener(new Button.OnClickListener(){
+        addButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent intent = new Intent().setType("text/*").setAction(Intent.ACTION_GET_CONTENT);
                 getActivity().startActivityForResult(Intent.createChooser(intent, "파일 선택"), 123);
@@ -148,7 +152,6 @@ public class FragmentAdd extends Fragment {
 
                 realm.beginTransaction();
                 while ((record = read.readNext()) != null) {
-
 
                     RecyclerData retrieve = realm.createObject(RecyclerData.class);
                     retrieve.setWord(record[0]);

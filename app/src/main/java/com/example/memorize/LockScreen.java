@@ -1,42 +1,39 @@
 package com.example.memorize;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static android.speech.tts.TextToSpeech.ERROR;
 
-public class FragmentStudy extends Fragment {
-    private View view;
-    private Context context;
-    private String[] weekday = {"", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+public class LockScreen extends Activity{
+    private String[] weekdayString = {"", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
     private String[] monthString = {"", "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"};
 
-    private TextView clock, date, unlockHint;
+    private TextView clock, date;
     private TextView wordView, meaningView;
     private TextView grade[] = new TextView[7];
     private int gradeId[] = {R.id.grade1, R.id.grade2, R.id.grade3, R.id.grade4, R.id.grade5, R.id.grade6, R.id.grade7};
@@ -52,58 +49,58 @@ public class FragmentStudy extends Fragment {
 
     private Realm realm;
     private Random r = new Random();
+
+    private Handler mHandler = new Handler();
+    private Timer mTimer;
     private TextToSpeech tts;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstaceState){
-        view = inflater.inflate(R.layout.frame_study, container, false);
-        context = view.getContext();
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.frame_study);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
         bindElement();
         setListener();
 
+        setTimer();
         setWordView();
-
-        return view;
     }
 
     private void bindElement(){
 
-        sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
-        clock = view.findViewById(R.id.clock);
-        date = view.findViewById(R.id.date);
+        sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        clock = findViewById(R.id.clock);
+        date = findViewById(R.id.date);
 
-        wordView = view.findViewById(R.id.wordView);
-        meaningView = view.findViewById(R.id.meaningView);
+        wordView = findViewById(R.id.wordView);
+        meaningView = findViewById(R.id.meaningView);
 
         for(int i=0; i<7; i++){
-            grade[i] = view.findViewById(gradeId[i]);
+            grade[i] = findViewById(gradeId[i]);
         }
 
-        nextButton = view.findViewById(R.id.nextWord);
-        prevButton = view.findViewById(R.id.prevWord);
-        unlockButton = view.findViewById(R.id.unlockButton);
-        unlockHint = view.findViewById(R.id.unlockHint);
+        nextButton = findViewById(R.id.nextWord);
+        prevButton = findViewById(R.id.prevWord);
+        unlockButton = findViewById(R.id.unlockButton);
 
-        knowButton = view.findViewById(R.id.knowButton);
-        dontKnowButton = view.findViewById(R.id.dontknowButton);
-        speechButton = view.findViewById(R.id.speechButton);
+        knowButton = findViewById(R.id.knowButton);
+        dontKnowButton = findViewById(R.id.dontknowButton);
 
-        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        Realm.init(context);
+        Realm.init(this);
 
         realm = Realm.getDefaultInstance();
         wordList = realm.where(RecyclerData.class).findAll();
 
-        clock.setVisibility(View.INVISIBLE);
-        date.setVisibility(View.INVISIBLE);
-
-        unlockButton.setVisibility(View.INVISIBLE);
-        unlockHint.setVisibility(View.INVISIBLE);
-
-        tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+        speechButton = findViewById(R.id.speechButton);
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 if(status != ERROR) {
@@ -113,16 +110,14 @@ public class FragmentStudy extends Fragment {
             }
         });
 
-        if(!wordList.isEmpty()) currentWordIndex = r.nextInt(wordList.size());
-        else currentWordIndex = 0;
+        currentWordIndex = r.nextInt(wordList.size());
     }
     private void setListener(){
         nextButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 if(sharedPreferences.getBoolean("vibrate", false)) vibrator.vibrate(20);
 
-                if(!wordList.isEmpty()) currentWordIndex = r.nextInt(wordList.size());
-                else currentWordIndex = 0;
+                currentWordIndex = r.nextInt(wordList.size());
 
                 setWordView();
             }
@@ -132,8 +127,7 @@ public class FragmentStudy extends Fragment {
             public void onClick(View v){
                 if(sharedPreferences.getBoolean("vibrate", false)) vibrator.vibrate(20);
 
-                if(!wordList.isEmpty()) currentWordIndex = r.nextInt(wordList.size());
-                else currentWordIndex = 0;
+                currentWordIndex = r.nextInt(wordList.size());
 
                 setWordView();
             }
@@ -141,7 +135,7 @@ public class FragmentStudy extends Fragment {
 
         unlockButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-
+                finish();
             }
         });
 
@@ -164,7 +158,6 @@ public class FragmentStudy extends Fragment {
 
             }
         });
-
         speechButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
 
@@ -178,7 +171,7 @@ public class FragmentStudy extends Fragment {
     }
 
     private void setWordView(){
-        getActivity().runOnUiThread(new Runnable(){
+        runOnUiThread(new Runnable(){
             public void run(){
                 if(wordList.isEmpty()) return;
 
@@ -199,14 +192,38 @@ public class FragmentStudy extends Fragment {
         });
     }
 
+    public void setTimer(){
+        mTimer = new Timer();
+        MyTimerTask task = new MyTimerTask();
+
+        mTimer.schedule(task, 500, 1000);
+    }
+
+    class MyTimerTask extends TimerTask{
+        public void run(){
+            mHandler.post(new Runnable(){
+                public void run(){
+                    Calendar cal = Calendar.getInstance();
+                    int month = cal.get(Calendar.MONTH) + 1, day = cal.get(Calendar.DAY_OF_MONTH), weekday = cal.get(Calendar.DAY_OF_WEEK);
+                    SimpleDateFormat clockFormat = new SimpleDateFormat("hh:mm", Locale.KOREA);
+
+                    String clockString = clockFormat.format(cal.getTime());
+                    String dateString = monthString[month] + " " + day + " " + weekdayString[weekday];
+
+                    clock.setText(clockString);
+                    date.setText(dateString);
+                }
+            });
+        }
+    }
+
     @Override
-    public void onDestroy(){
-        if(tts != null){
+    protected void onDestroy() {
+        //Close the Text to Speech Library
+        if(tts != null) {
             tts.stop();
             tts.shutdown();
         }
         super.onDestroy();
     }
 }
-
-
