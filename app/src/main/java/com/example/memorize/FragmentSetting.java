@@ -1,6 +1,7 @@
 package com.example.memorize;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -56,6 +57,11 @@ public class FragmentSetting extends Fragment {
 
                 editor.putBoolean("lockScreen", isChecked);
                 editor.apply();
+
+
+                Intent intent = new Intent(context, LockService.class);
+                if(isChecked) getActivity().startService(intent);
+                else getActivity().stopService(intent);
             }
         });
 
@@ -97,9 +103,14 @@ public class FragmentSetting extends Fragment {
         if(!sharedPreferences.getBoolean("lockScreen", false)){
             toggleLockScreen.setChecked(false);
             setEnabledComponentRelatedToLockScreen(false);
+            Intent intent = new Intent(context, LockService.class);
+            getActivity().stopService(intent);
+
         } else {
             toggleLockScreen.setChecked(true);
             setEnabledComponentRelatedToLockScreen(true);
+            Intent intent = new Intent(context, LockService.class);
+            getActivity().startService(intent);
         }
 
         toggleVibrate.setChecked(sharedPreferences.getBoolean("vibrate",false));

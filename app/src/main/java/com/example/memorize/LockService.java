@@ -18,32 +18,29 @@ public class LockService extends Service{
 
     @Override
     public void onCreate() {
-        unregisterRestartAlarm();
         super.onCreate();
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
-        filter.addAction(Intent.ACTION_SCREEN_OFF);
         mReceiver = new MyBroadCastReceiver();
         registerReceiver(mReceiver, filter);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if( intent == null)
-        {
-            startForeground(1, new Notification());
-            IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
-            filter.addAction(Intent.ACTION_SCREEN_OFF);
-            mReceiver = new MyBroadCastReceiver();
-            registerReceiver(mReceiver, filter);
+        if( intent != null){
+            if(intent.getAction() == null) {
+                if (mReceiver == null) {
+                    mReceiver = new MyBroadCastReceiver();
+                    IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+                    registerReceiver(mReceiver, filter);
+                }
+            }
         }
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     @Override
     public void onDestroy() {
-        registerRestartAlarm();
-        unregisterReceiver(mReceiver);
-
+        if(mReceiver != null) unregisterReceiver(mReceiver);
         super.onDestroy();
     }
 
@@ -51,28 +48,4 @@ public class LockService extends Service{
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-    void registerRestartAlarm(){
-        Log.d("TAG","register Alarm");
-        Intent intent = new Intent(LockService.this, RestartService.class);
-        intent.setAction(RestartService.ACTION_RESTART_PERSISTENTSERVICE);
-        PendingIntent sender = PendingIntent.getBroadcast(LockService.this, 0, intent, 0);
-
-        long firstTime = SystemClock.elapsedRealtime();
-        firstTime += 1 * 1000;
-
-        AlarmManager am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, firstTime, 10*1000, sender);
-    }
-
-    void unregisterRestartAlarm(){
-        Log.d("TAG","unregister Alarm");
-        Intent intent = new Intent(LockService.this, RestartService.class);
-        intent.setAction(RestartService.ACTION_RESTART_PERSISTENTSERVICE);
-        PendingIntent sender = PendingIntent.getBroadcast(LockService.this, 0, intent, 0);
-        AlarmManager am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        am.cancel(sender);
-    }
-
-
 }

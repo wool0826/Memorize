@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+    private Intent serviceIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,10 +47,7 @@ public class MainActivity extends AppCompatActivity {
         addFragmentToFrame(transaction);
         switchFragment(transaction);
 
-        Intent intent = new Intent(
-                getApplicationContext(),//현재제어권자
-                LockService.class); // 이동할 컴포넌트
-        startService(intent);
+
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){

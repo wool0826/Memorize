@@ -14,8 +14,9 @@ public class MyBroadCastReceiver extends BroadcastReceiver {
         }
         else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF))
         {
-            Intent in = new Intent(context, LockService.class);
-            context.startService(in);
+            Intent in = new Intent(context, LockScreen.class);
+            in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(in);
         }
         else if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED))
         {
