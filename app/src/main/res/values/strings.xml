@@ -9,6 +9,7 @@
     <string name="switch_lockscreen">잠금화면 설정</string>
     <string name="switch_hourMethod">24시간 형식 사용</string>
     <string name="switch_haptic">진동 기능 사용</string>
+    <string name="switch_hideWord">학습 시 영어단어 숨기기</string>
     <string name="enable_cardView">카드 형식</string>
     <string name="enable_choice">객관식 형식</string>
     <string name="backup_wordbook">단어장 CSV 백업</string>

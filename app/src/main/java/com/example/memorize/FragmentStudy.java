@@ -46,7 +46,6 @@ public class FragmentStudy extends Fragment {
     private Vibrator vibrator;
 
     private RealmResults<RecyclerData> wordList;
-    private int currentWordIndex = 0;
 
     private SharedPreferences sharedPreferences;
 
@@ -54,6 +53,8 @@ public class FragmentStudy extends Fragment {
     private Random r = new Random();
     private TextToSpeech tts;
 
+    private ArrayList<Integer> shuffleList;
+    private int currentWordIndex = 0;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstaceState){
@@ -113,16 +114,21 @@ public class FragmentStudy extends Fragment {
             }
         });
 
-        if(!wordList.isEmpty()) currentWordIndex = r.nextInt(wordList.size());
-        else currentWordIndex = 0;
+        shuffleList = new ArrayList<>();
+        for(int i=0; i<wordList.size(); i++){
+            shuffleList.add(i);
+        }
+
+        Collections.shuffle(shuffleList);
+        currentWordIndex = 0;
     }
     private void setListener(){
         nextButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 if(sharedPreferences.getBoolean("vibrate", false)) vibrator.vibrate(20);
 
-                if(!wordList.isEmpty()) currentWordIndex = r.nextInt(wordList.size());
-                else currentWordIndex = 0;
+                currentWordIndex++;
+                if(currentWordIndex >= shuffleList.size()) currentWordIndex = 0;
 
                 setWordView();
             }
@@ -132,8 +138,8 @@ public class FragmentStudy extends Fragment {
             public void onClick(View v){
                 if(sharedPreferences.getBoolean("vibrate", false)) vibrator.vibrate(20);
 
-                if(!wordList.isEmpty()) currentWordIndex = r.nextInt(wordList.size());
-                else currentWordIndex = 0;
+                currentWordIndex--;
+                if(currentWordIndex < 0) currentWordIndex = shuffleList.size() - 1;
 
                 setWordView();
             }
@@ -148,23 +154,22 @@ public class FragmentStudy extends Fragment {
         knowButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 realm.beginTransaction();
-                wordList.get(currentWordIndex).setSuccessCount(wordList.get(currentWordIndex).getSuccessCount() + 1);
+                wordList.get(shuffleList.get(currentWordIndex)).setSuccessCount(wordList.get(shuffleList.get(currentWordIndex)).getSuccessCount() + 1);
                 realm.commitTransaction();
 
-                nextButton.callOnClick();
+                wordView.setVisibility(View.VISIBLE);
             }
         });
 
         dontKnowButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 realm.beginTransaction();
-                wordList.get(currentWordIndex).setFailureCount(wordList.get(currentWordIndex).getFailureCount() + 1);
+                wordList.get(shuffleList.get(currentWordIndex)).setFailureCount(wordList.get(shuffleList.get(currentWordIndex)).getFailureCount() + 1);
                 realm.commitTransaction();
-                nextButton.callOnClick();
 
+                wordView.setVisibility(View.VISIBLE);
             }
         });
-
         speechButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
 
@@ -182,9 +187,13 @@ public class FragmentStudy extends Fragment {
             public void run(){
                 if(wordList.isEmpty()) return;
 
-                RecyclerData currentData = wordList.get(currentWordIndex);
+                RecyclerData currentData = wordList.get(shuffleList.get(currentWordIndex));
                 wordView.setText(currentData.getWord());
                 meaningView.setText(currentData.getMeaning());
+
+                if(sharedPreferences.getBoolean("hideWord", false)){
+                    wordView.setVisibility(View.INVISIBLE);
+                }
 
                 for(int i=0; i<7; i++){
                     if(i == 3) grade[i].setBackgroundResource(R.color.colorNormalStatus);

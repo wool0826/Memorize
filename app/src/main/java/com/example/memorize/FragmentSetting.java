@@ -22,7 +22,7 @@ public class FragmentSetting extends Fragment {
     private View view;
     private Context context;
 
-    private Switch toggleLockScreen, hour24Method, toggleVibrate;
+    private Switch toggleLockScreen, hour24Method, toggleVibrate, toggleHideWord;
     private Button backupWordBook;
 
     @Nullable
@@ -43,6 +43,7 @@ public class FragmentSetting extends Fragment {
         toggleLockScreen = view.findViewById(R.id.switch_lockScreen);
         hour24Method = view.findViewById(R.id.switch_hourMethod);
         toggleVibrate = view.findViewById(R.id.switch_haptic);
+        toggleHideWord = view.findViewById(R.id.switch_hideWord);
 
         backupWordBook = view.findViewById(R.id.backupWordBook);
     }
@@ -88,6 +89,15 @@ public class FragmentSetting extends Fragment {
             }
         });
 
+        toggleHideWord.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor editor = context.getSharedPreferences("settings",Context.MODE_PRIVATE).edit();
+                editor.putBoolean("hideWord", isChecked);
+                editor.apply();
+            }
+        });
+
         backupWordBook.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
 
@@ -114,5 +124,6 @@ public class FragmentSetting extends Fragment {
         }
 
         toggleVibrate.setChecked(sharedPreferences.getBoolean("vibrate",false));
+        toggleHideWord.setChecked(sharedPreferences.getBoolean("hideWord",false));
     }
 }

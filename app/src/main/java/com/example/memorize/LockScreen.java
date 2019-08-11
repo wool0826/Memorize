@@ -17,7 +17,9 @@ import android.widget.TextView;
 
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Random;
@@ -43,7 +45,7 @@ public class LockScreen extends Activity{
     private Vibrator vibrator;
 
     private RealmResults<RecyclerData> wordList;
-    private int currentWordIndex = 0;
+
 
     private SharedPreferences sharedPreferences;
 
@@ -53,6 +55,9 @@ public class LockScreen extends Activity{
     private Handler mHandler = new Handler();
     private Timer mTimer;
     private TextToSpeech tts;
+
+    private ArrayList<Integer> shuffleList;
+    private int currentWordIndex = 0;
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -110,14 +115,21 @@ public class LockScreen extends Activity{
             }
         });
 
-        currentWordIndex = r.nextInt(wordList.size());
+        shuffleList = new ArrayList<>();
+        for(int i=0; i<wordList.size(); i++){
+            shuffleList.add(i);
+        }
+
+        Collections.shuffle(shuffleList);
+        currentWordIndex = 0;
     }
     private void setListener(){
         nextButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 if(sharedPreferences.getBoolean("vibrate", false)) vibrator.vibrate(20);
 
-                currentWordIndex = r.nextInt(wordList.size());
+                currentWordIndex++;
+                if(currentWordIndex >= shuffleList.size()) currentWordIndex = 0;
 
                 setWordView();
             }
@@ -127,7 +139,8 @@ public class LockScreen extends Activity{
             public void onClick(View v){
                 if(sharedPreferences.getBoolean("vibrate", false)) vibrator.vibrate(20);
 
-                currentWordIndex = r.nextInt(wordList.size());
+                currentWordIndex--;
+                if(currentWordIndex < 0) currentWordIndex = shuffleList.size() - 1;
 
                 setWordView();
             }
@@ -142,20 +155,20 @@ public class LockScreen extends Activity{
         knowButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 realm.beginTransaction();
-                wordList.get(currentWordIndex).setSuccessCount(wordList.get(currentWordIndex).getSuccessCount() + 1);
+                wordList.get(shuffleList.get(currentWordIndex)).setSuccessCount(wordList.get(shuffleList.get(currentWordIndex)).getSuccessCount() + 1);
                 realm.commitTransaction();
 
-                nextButton.callOnClick();
+                wordView.setVisibility(View.VISIBLE);
             }
         });
 
         dontKnowButton.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 realm.beginTransaction();
-                wordList.get(currentWordIndex).setFailureCount(wordList.get(currentWordIndex).getFailureCount() + 1);
+                wordList.get(shuffleList.get(currentWordIndex)).setFailureCount(wordList.get(shuffleList.get(currentWordIndex)).getFailureCount() + 1);
                 realm.commitTransaction();
-                nextButton.callOnClick();
 
+                wordView.setVisibility(View.VISIBLE);
             }
         });
         speechButton.setOnClickListener(new Button.OnClickListener(){
@@ -175,9 +188,15 @@ public class LockScreen extends Activity{
             public void run(){
                 if(wordList.isEmpty()) return;
 
-                RecyclerData currentData = wordList.get(currentWordIndex);
+                RecyclerData currentData = wordList.get(shuffleList.get(currentWordIndex));
                 wordView.setText(currentData.getWord());
                 meaningView.setText(currentData.getMeaning());
+
+                if(sharedPreferences.getBoolean("hideWord", false)){
+                    wordView.setVisibility(View.INVISIBLE);
+                } else {
+                    wordView.setVisibility(View.VISIBLE);
+                }
 
                 for(int i=0; i<7; i++){
                     if(i == 3) grade[i].setBackgroundResource(R.color.colorNormalStatus);
